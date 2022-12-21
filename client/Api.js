@@ -131,5 +131,20 @@ class Api {
     */
   
     /***********************Labb 2 ***********************/
+    update(id, completed){
+
+        return fetch(`http://localhost:5000/pTasks/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({completed: completed}),
+            headers: {
+                'content-type': 'application/json'
+              }
+
+          })
+            .then((result) => result)
+            .catch((err) => console.log(err));
+
+    }
+
   }
   
