@@ -171,7 +171,6 @@ function saveTask() {
 /* En funktion som ansvarar för att skriva ut todo-listan i ett ul-element. */
 function renderList() {
   /* Logg som visar att vi hamnat i render-funktionen */
-  console.log('rendering');
 
   /* Anrop till getAll hos vårt api-objekt. Metoden skapades i Api.js och har hand om READ-förfrågningar mot vårt backend. */
   api.getAll().then((tasks) => {
@@ -181,6 +180,9 @@ function renderList() {
      */
 
     /* Först sätts dess HTML-innehåll till en tom sträng. Det betyder att alla befintliga element och all befintlig text inuti todoListElement tas bort. Det kan nämligen finnas list-element däri när denna kod körs, men de tas här bort för att hela listan ska uppdateras i sin helhet. */
+    
+    tasks.sort((a,b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+    
     todoListElement.innerHTML = '';
 
     /* De hämtade uppgifterna från servern via api:et getAll-funktion får heta tasks, eftersom callbackfunktionen som skickades till then() har en parameter som är döpt så. Det är tasks-parametern som är innehållet i promiset. */
@@ -225,7 +227,7 @@ function renderTask({ id, title, description, dueDate, completed }) {
     <li id="${id}" class="select-none mt-2 py-2 border-b border-amber-800">
       <div class="flex items-center">
         <h3 class="mb-3 flex-1 text-xl font-bold text-pink-800 uppercase">${title}</h3>
-        <input type="checkbox" onclick="completeTask(${id}, ${completed})" id="completed" name="completed">
+        <input type="checkbox" onclick="completeTask(${id})" id="completed" name="completed">
         <label for="completed" class="mr-10 ml-3">Slutförd</label>
         <div>
           <span>${dueDate}</span>
@@ -251,7 +253,7 @@ function renderTask({ id, title, description, dueDate, completed }) {
     <li id="${id}" class="select-none mt-2 bg-green-100 py-2 border-b border-amber-800">
       <div class="flex items-center">
         <h3 class="mb-3 flex-1 text-xl font-bold text-pink-800 uppercase">${title}</h3>
-        <input type="checkbox" onclick="completeTask(${id}, ${completed})" id="completed" checked name="completed">
+        <input type="checkbox" onclick="completeTask(${id})" id="completed" checked name="completed">
         <label for="completed" class="mr-10 ml-3">Slutförd</label>
         <div>
           <span>${dueDate}</span>
@@ -314,14 +316,8 @@ Om du hittar något annat sätt som funkar för dig, använd för all del det, s
 
 /* Anropet till api.update ska följas av then(). then() behöver, som bör vara bekant vid det här laget, en callbackfunktion som ska hantera det som kommer tillbaka från servern via vår api-klass. Inuti den funktionen bör listan med uppgifter renderas på nytt, så att den nyligen gjorda förändringen syns. */
 
-function completeTask(id, completed){
-    console.log(`Checkbox checked for id ${id}`);
-    if(completed == true){
-        api.update(id, false).then((result) => {renderList()})
-    }else{
-        api.update(id, true).then((result) => {renderList()})
-    }
-    
+function completeTask(id){
+        api.update(id).then((result) => {renderList()})
 }
 
 /***********************Labb 2 ***********************/
